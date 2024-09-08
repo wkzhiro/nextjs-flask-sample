@@ -3,8 +3,11 @@ Next.js と Flask を使った Web アプリケーションのセットアップ
 
 【環境構築】
 1. 必要なライブラリとバージョン
+
 〇Next.js
+
 Node.js: v14.x または v16.x
+
 Next.js: v12.x
 
 〇Flask
