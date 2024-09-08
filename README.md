@@ -17,6 +17,7 @@ Flask: v2.1.x
 
 Flask-CORS: v3.x
 
+
 2. Next.js のセットアップ
 
 2.1 プロジェクトの作成
