@@ -12,7 +12,9 @@ Next.js: v12.x
 
 〇Flask
 Python: 3.8 以上
+
 Flask: v2.1.x
+
 Flask-CORS: v3.x
 
 2. Next.js のセットアップ
