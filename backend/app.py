@@ -12,6 +12,13 @@ def hello():
 def hello_world():
     return jsonify(message='Hello World by Flask')
 
+@app.route('/api/multiply/<int:id>', methods=['GET'])
+def multiply(id):
+    print("multiply")
+    # idの2倍の数を計算
+    doubled_value = id * 2
+    return jsonify({"doubled_value": doubled_value})
+
 @app.route('/api/echo', methods=['POST'])
 def echo():
     print("echo")
@@ -21,13 +28,6 @@ def echo():
     # 'message' プロパティが含まれていることを確認
     message = data.get('message', 'No message provided')
     return jsonify({"message": f"echo: {message}"})
-
-@app.route('/api/multiply/<int:id>', methods=['GET'])
-def multiply(id):
-    print("multiply")
-    # idの2倍の数を計算
-    doubled_value = id * 2
-    return jsonify({"doubled_value": doubled_value})
 
 if __name__ == '__main__':
     app.run(debug=True)
