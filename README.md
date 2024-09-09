@@ -8,6 +8,7 @@ Next.js と Flask を使った Web アプリケーションのセットアップ
 
 ・Node.js: v14.x または v16.x
 Node.js がインストールされていることを確認してください。インストールされていない場合は、Node.js の公式サイトからインストールしてください。
+
 参考サイト：https://qiita.com/sefoo0104/items/0653c935ea4a4db9dc2b
 
 ・Next.js: v12.x
@@ -52,6 +53,7 @@ npm run dev
 ```
 
 2.5 動作確認
+
 ブラウザで http://localhost:3000 にアクセスすると、Next.js が起動していることを確認できます。
 Next.jsとFlaskの連携アプリ というページが表示されれば成功です!
 （プロジェクトを起動した場合はWelcome to Next.jsというページが表示されます。）
@@ -60,12 +62,14 @@ Next.jsとFlaskの連携アプリ というページが表示されれば成功�
 プロジェクトから作成された方は、pases/index.jsをGitHubのコードをコピーしてください。
 
 3. Flask のセットアップ
+
 3.0 backendのフォルダに移行します。   
 ```bash
 cd backend
 ```
 
 3.1 仮想環境の作成と有効化
+
 Python の仮想環境を作成します。
 
 ```bash
@@ -91,7 +95,10 @@ venv\Scripts\activate
 pip install Flask==2.3.3 flask-cors==3.0.10
 ```
 
-3.4 app.pyの作成app.py という名前のファイルを作成し、以下の内容を記述します。
+3.4 app.pyの作成
+
+app.py という名前のファイルを作成し、以下の内容を記述します。
+（既にファイルには記載済みです。）
 
 ```python
 
@@ -131,17 +138,22 @@ python app.py
 ブラウザで http://localhost:5000/ にアクセスして、{"message": "Flask start!"} が表示されることを確認します。
 
 3.6 API（GET）の確認
+
 ブラウザで http://localhost:5000/api/hello にアクセスして、{"message": "Hello World"} が表示されることを確認します。
 
 4．Next.jsの実装
+
 Next.jsからFlaskにリクエスト（GETやPOST）を送り、Flaskからのレスポンスを受け取る実装を行います。
 
 4.1 GET メソッドの実装
+
 〇Next.js(http://localhost:3000)の動き
+
 http://localhost:5000/api/helloにGETリクエストを送り、Flaskからのレスポンス（{"message": "Hello World"}）が返されます。
 これをNext.jsで受け取り、画面に表示します。
 
 〇Flask(http://localhost:5000/)の動き
+
 http://localhost:5000/api/helloに対するGETリクエストを受け取り、（{"message": "Hello World"}を返します。
 
 該当するコードは以下の部分です。
@@ -152,13 +164,16 @@ def hello():
 ```
 
 4．2. POST メソッドの実装
+
 フロントエンドの入力欄にテキストを入力し、"送信" ボタンを押すと、そのテキストがバックエンドに送信され、同じ内容が画面に表示されます。
 
 〇Next.js(http://localhost:3000)の動き
+
 http://localhost:5000/api/echoにPOSTリクエストを送り、Flaskからのレスポンス（{"message": "入力したテキスト"}）が返されます。
 これをNext.jsで受け取り、画面に表示します。
 
 〇Flask(http://localhost:5000/)の動き
+
 http://localhost:5000/api/echoに対するPOSTリクエストを受け取り、（{"message": "入力したテキスト"}を返します。
 
 該当するコードは以下の部分です。
@@ -246,8 +261,11 @@ export default function Home() {
 ```
 
 解説:
+
 １．コードの構成
+
 1.1 returnよりも上の部分は関数（requestの方法や、データの受け渡し、定数の定義）を記載しています。
+
 1.2 return以下の部分は、htmlの記載方法に従って、画面の表示を記載しています。ただし、これはjsxというjavascriptでhtmlのように記載できる方法を使用しているためです。
 
 useState: ユーザーの入力(input)と、Flaskサーバーからの応答(response)を管理しています。ReactのuseStateフックを使用して、コンポーネントの状態を管理します。
@@ -258,7 +276,11 @@ handleSubmit関数: フォームが送信されたとき（ボタンを押した
 
 
 まとめ
+
 Next.jsはフロントエンド部分を担当し、ユーザーからの入力を収集します。
+
 Flaskはバックエンド部分を担当し、APIを通じてデータのやり取りを行います。
+
 この連携により、フロントエンドとバックエンドがシームレスに動作し、ユーザーインターフェースが機能するようになります。
+
 この手順に従うことで、Next.jsとFlaskを連携させ、エンドツーエンドで動作するWebアプリケーションを構築できます。
