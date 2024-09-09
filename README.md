@@ -100,7 +100,7 @@ venv\Scripts\activate
 以下のコマンドを実行して Flask と Flask-CORS をインストールします。
 
 ```bash
-pip install Flask==2.3.3 flask-cors==3.0.10
+pip install -r requirements.txt
 ```
 
 3.4 app.pyの作成
@@ -111,30 +111,40 @@ app.py という名前のファイルを作成し、以下の内容を記述し�
 ```python
 
 #モジュールインポート：アプリに必要なモジュールを使用できるようにする
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-#アプリの作成：appでFlaskフレームワークを利用できるようにする
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})  # CORS設定を更新
 
-#エンドポイントの設定：フロントエンドとの連携部分
 @app.route('/', methods=['GET'])
 def hello():
-    return jsonify({'message': 'Flask start! '})
+    return jsonify({'message': 'Flask start!'})
 
 @app.route('/api/hello', methods=['GET'])
-def hello():
-    return jsonify({'message': 'Hello World by Flask'})
+def hello_world():
+    return jsonify(message='Hello World by Flask')
 
 @app.route('/api/echo', methods=['POST'])
 def echo():
-    data = request.json
-    return jsonify({'message': data['input']})
+    print("echo")
+    data = request.get_json()  # JSONデータを取得
+    if data is None:
+        return jsonify({"error": "Invalid JSON"}), 400
+    # 'message' プロパティが含まれていることを確認
+    message = data.get('message', 'No message provided')
+    return jsonify({"message": f"echo: {message}"})
 
-#アプリの起動：app.runでアプリを実行する。 
+@app.route('/api/multiply/<int:id>', methods=['GET'])
+def multiply(id):
+    print("multiply")
+    # idの2倍の数を計算
+    doubled_value = id * 2
+    return jsonify({"doubled_value": doubled_value})
+
 if __name__ == '__main__':
     app.run(debug=True)
+
 ```
 
 3.5以下のコマンドを実行して Flask サーバーを起動します。
@@ -155,6 +165,8 @@ Next.jsからFlaskにリクエスト（GETやPOST）を送り、Flaskからの�
 
 4.1 GET メソッドの実装
 
+■echo
+
 〇Next.js(http://localhost:3000)の動き
 
 http://localhost:5000/api/helloにGETリクエストを送り、Flaskからのレスポンス（{"message": "Hello World"}）が返されます。
@@ -169,6 +181,27 @@ http://localhost:5000/api/helloに対するGETリクエストを受け取り、�
 @app.route('/api/hello', methods=['GET'])
 def hello():
     return jsonify({'message': 'Hello World'})
+```
+
+■multiply
+
+〇Next.js(http://localhost:3000)の動き
+
+http://localhost:5000/api/multiply/<int:id>にGETリクエストを送り、Flaskからのレスポンス（{"doubled_value": doubled_value(idの２倍値)}）が返されます。
+これをNext.jsで受け取り、画面に表示します。
+
+〇Flask(http://localhost:5000/)の動き
+
+http://localhost:5000/api/multiply/<int:id>に対するGETリクエストを受け取り、（{"doubled_value": doubled_value(idの２倍値)}を返します。
+
+該当するコードは以下の部分です。
+```bash
+@app.route('/api/multiply/<int:id>', methods=['GET'])
+def multiply(id):
+    print("multiply")
+    # idの2倍の数を計算
+    doubled_value = id * 2
+    return jsonify({"doubled_value": doubled_value})
 ```
 
 4．2. POST メソッドの実装
@@ -188,8 +221,13 @@ http://localhost:5000/api/echoに対するPOSTリクエストを受け取り、�
 ```bash
 @app.route('/api/echo', methods=['POST'])
 def echo():
-    data = request.get_json()
-    return jsonify(message=data['input'])
+    print("echo")
+    data = request.get_json()  # JSONデータを取得
+    if data is None:
+        return jsonify({"error": "Invalid JSON"}), 400
+    # 'message' プロパティが含まれていることを確認
+    message = data.get('message', 'No message provided')
+    return jsonify({"message": f"echo: {message}"})
 ```
 
 【Next.js解説】
@@ -198,7 +236,10 @@ def echo():
 import { useState } from 'react';
 
 export default function Home() {
+
   //GETリクエストを送信
+  const [getResponse, setGetResponse] = useState('');
+
   const handleGetRequest = async () => {
     const res = await fetch('http://localhost:5000/api/hello', {
       method: 'GET',
@@ -212,9 +253,27 @@ export default function Home() {
     setGetResponse(data.message);
   };
 
+  //動的なGETリクエストの送信
+  const [id, setId] = useState('');
+  const [idResponse, setIdResponse] = useState('');
+
+  // IDを指定してGETリクエストを送信
+  const handleIdRequest = async (e) => {
+    e.preventDefault();
+
+    const res = await fetch(`http://localhost:5000/api/multiply/${id}`, {
+      method: 'GET',
+    });
+    const data = await res.json();
+
+    // IDリクエストの結果をコンソールに表示
+    console.log("IDリクエストの結果:", data.doubled_value);
+
+    setIdResponse(data.doubled_value);
+  };
+
   //POSTリクエストを送信
   const [input, setInput] = useState('');
-  const [getResponse, setGetResponse] = useState('');
   const [postResponse, setPostResponse] = useState('');
 
   const handleSubmit = async (e) => {
@@ -240,6 +299,7 @@ export default function Home() {
     setPostResponse(data.message);
   };
 
+
   return (
     <div>
 
@@ -248,6 +308,18 @@ export default function Home() {
       <h2>GETリクエストを送信</h2>
       <button onClick={handleGetRequest}>GETリクエストを送信</button>
       {getResponse && <p>サーバーからのGET応答: {getResponse}</p>}
+
+      <h2>IDを指定してGETリクエストを送信</h2>
+      <form onSubmit={handleIdRequest}>
+        <input
+          type="number"
+          value={id}
+          onChange={(e) => setId(e.target.value)}
+          placeholder="IDを入力してください"
+        />
+        <button type="submit">送信</button>
+      </form>
+      {idResponse && <p>Flaskからの応答: {idResponse}</p>}
 
       <h2>POSTリクエストを送信</h2>
       <form onSubmit={handleSubmit}>
@@ -261,12 +333,20 @@ export default function Home() {
 
         <button type="submit">送信</button>
       </form>
+      {postResponse && <p>FlaskからのPOST応答: {postResponse}</p>}
 
-      {postResponse && <p>サーバーからのPOST応答: {postResponse}</p>}
     </div>
   );
 }
 ```
+4.3 next.jsの起動
+
+/frontendのフォルダにて、以下のコマンドで起動できる。
+```bash
+npm run dev
+```
+
+
 
 解説:
 
@@ -280,7 +360,10 @@ useState: ユーザーの入力(input)と、Flaskサーバーからの応答(res
 
 handleGetRequest関数: GETリクエストをFlaskのAPIに送信し、返ってきたデータをコンソールに表示し、状態を更新します。
 
+handleIdRequest関数：idを指定して、GETリクエストをFlaskに送信し、２倍になった数値を受け取り、表示します。
+
 handleSubmit関数: フォームが送信されたとき（ボタンを押したとき）にFlaskのAPIにPOSTリクエストを送信し、返ってきたデータを表示します。
+
 
 
 まとめ

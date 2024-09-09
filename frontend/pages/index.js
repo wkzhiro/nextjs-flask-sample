@@ -1,7 +1,10 @@
 import { useState } from 'react';
 
 export default function Home() {
+
   //GETリクエストを送信
+  const [getResponse, setGetResponse] = useState('');
+
   const handleGetRequest = async () => {
     const res = await fetch('http://localhost:5000/api/hello', {
       method: 'GET',
@@ -15,12 +18,28 @@ export default function Home() {
     setGetResponse(data.message);
   };
 
-  //POSTリクエストを送信
-  const [input, setInput] = useState('');
-  const [getResponse, setGetResponse] = useState('');
-  const [postResponse, setPostResponse] = useState('');
+  //動的なGETリクエストの送信
   const [id, setId] = useState('');
   const [idResponse, setIdResponse] = useState('');
+
+  // IDを指定してGETリクエストを送信
+  const handleIdRequest = async (e) => {
+    e.preventDefault();
+
+    const res = await fetch(`http://localhost:5000/api/multiply/${id}`, {
+      method: 'GET',
+    });
+    const data = await res.json();
+
+    // IDリクエストの結果をコンソールに表示
+    console.log("IDリクエストの結果:", data.doubled_value);
+
+    setIdResponse(data.doubled_value);
+  };
+
+  //POSTリクエストを送信
+  const [input, setInput] = useState('');
+  const [postResponse, setPostResponse] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,20 +64,6 @@ export default function Home() {
     setPostResponse(data.message);
   };
 
-  // IDを指定してGETリクエストを送信
-  const handleIdRequest = async (e) => {
-    e.preventDefault();
-
-    const res = await fetch(`http://localhost:5000/api/multiply/${id}`, {
-      method: 'GET',
-    });
-    const data = await res.json();
-
-    // IDリクエストの結果をコンソールに表示
-    console.log("IDリクエストの結果:", data.doubled_value);
-
-    setIdResponse(data.doubled_value);
-  };
 
   return (
     <div>
@@ -68,6 +73,18 @@ export default function Home() {
       <h2>GETリクエストを送信</h2>
       <button onClick={handleGetRequest}>GETリクエストを送信</button>
       {getResponse && <p>サーバーからのGET応答: {getResponse}</p>}
+
+      <h2>IDを指定してGETリクエストを送信</h2>
+      <form onSubmit={handleIdRequest}>
+        <input
+          type="number"
+          value={id}
+          onChange={(e) => setId(e.target.value)}
+          placeholder="IDを入力してください"
+        />
+        <button type="submit">送信</button>
+      </form>
+      {idResponse && <p>Flaskからの応答: {idResponse}</p>}
 
       <h2>POSTリクエストを送信</h2>
       <form onSubmit={handleSubmit}>
@@ -81,20 +98,8 @@ export default function Home() {
 
         <button type="submit">送信</button>
       </form>
-
       {postResponse && <p>FlaskからのPOST応答: {postResponse}</p>}
 
-      <h2>IDを指定してGETリクエストを送信</h2>
-      <form onSubmit={handleIdRequest}>
-        <input
-          type="number"
-          value={id}
-          onChange={(e) => setId(e.target.value)}
-          placeholder="IDを入力してください"
-        />
-        <button type="submit">送信</button>
-      </form>
-      {idResponse && <p>Flaskからの応答: {idResponse}</p>}
     </div>
   );
 }
