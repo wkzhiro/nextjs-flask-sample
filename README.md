@@ -18,7 +18,7 @@ Node.js がインストールされていることを確認してください。
 ・Flask-CORS: v3.x
 
 〇GitHubのクローン
-```bash
+```
 git clone https://github.com/Daiki-ux/8th_step3-2.git
 cd 8th_step3-2
 ```
