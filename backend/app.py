@@ -1,17 +1,26 @@
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})  # CORS設定を更新
+
+@app.route('/', methods=['GET'])
+def hello():
+    return jsonify({'message': 'Flask start!'})
 
 @app.route('/api/hello', methods=['GET'])
 def hello_world():
-    return jsonify(message='Hello World')
+    return jsonify(message='Hello World by Flask')
 
 @app.route('/api/echo', methods=['POST'])
 def echo():
-    data = request.get_json()
-    return jsonify(message=data['input'])
+    print("echo")
+    data = request.get_json()  # JSONデータを取得
+    if data is None:
+        return jsonify({"error": "Invalid JSON"}), 400
+    # 'message' プロパティが含まれていることを確認
+    message = data.get('message', 'No message provided')
+    return jsonify({"message": f"echo: {message}"})
 
 if __name__ == '__main__':
     app.run(debug=True)

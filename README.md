@@ -6,86 +6,94 @@ Next.js と Flask を使った Web アプリケーションのセットアップ
 
 〇Next.js
 
-Node.js: v14.x または v16.x
+・Node.js: v14.x または v16.x
+Node.js がインストールされていることを確認してください。インストールされていない場合は、Node.js の公式サイトからインストールしてください。
+参考サイト：https://qiita.com/sefoo0104/items/0653c935ea4a4db9dc2b
 
-Next.js: v12.x
+・Next.js: v12.x
 
 〇Flask
-Python: 3.8 以上
+・Python: 3.8 以上
+・Flask: v2.3.x
+・Flask-CORS: v3.x
 
-Flask: v2.1.x
+〇GitHubのクローン
+```bash
+git clone https://github.com/Daiki-ux/8th_step3-2.git
+cd 8th_step3-2
+```
 
-Flask-CORS: v3.x
-
+※Zipでダウンロードしても可
 
 2. Next.js のセットアップ
 
 2.1 プロジェクトの作成
-Node.js がインストールされていることを確認してください。インストールされていない場合は、Node.js の公式サイトからインストールしてください。
+プロジェクトを作成する場合は、以下のコマンドを入力してください。
 ターミナルを開き、プロジェクトを作成したいディレクトリに移動して以下のコマンドを実行します。
-
-bash
+```bash
 npx create-next-app@12 nextjs-flask-app
+```
+※必要なものはインストールを実施（yを入力して、Enter）
 
-ディレクトリに移動します。
-
-bash
+2.2 nextjsのプロジェクトのディレクトリに移動します。
+```bash
 cd nextjs-flask-app
-
-
-2.2 必要なパッケージのインストール
-
+```
+2.3 必要なパッケージのインストール
 プロジェクトのディレクトリで以下のコマンドを実行して、必要なパッケージをインストールします。
-
-bash
+```bash
 npm install
+```
 
-
-2.3 Next.js の立ち上げ
-
+2.4 Next.js の立ち上げ
 プロジェクトディレクトリ内で以下のコマンドを実行して、Next.js 開発サーバーを起動します。
-
-bash
+```bash
 npm run dev
+```
 
-ブラウザで http://localhost:3000 にアクセスすると、Next.js が立ち上がります。
+2.5 動作確認
+ブラウザで http://localhost:3000 にアクセスすると、Next.js が起動していることを確認できます。
+Next.jsとFlaskの連携アプリ というページが表示されれば成功です!
+（プロジェクトを起動した場合はWelcome to Next.jsというページが表示されます。）
 
+（2.6 ページの作成）
+プロジェクトから作成された方は、pases/index.jsをGitHubのコードをコピーしてください。
 
 3. Flask のセットアップ
-   
-3.1 仮想環境の作成と有効化
+3.0 backendのフォルダに移行します。   
+```bash
+cd backend
+```
 
+3.1 仮想環境の作成と有効化
 Python の仮想環境を作成します。
 
-bash
+```bash
 python -m venv venv
-仮想環境を有効化します。
+```
 
-macOS/Linux:
-bash
+3.2仮想環境を有効化します。
+
+macOS/Linuxの場合:
+```bash
 source venv/bin/activate
-
-
-Windows:
-bash
+```
+Windowsの場合:
+```bash
 venv\Scripts\activate
+```
 
-
-3.2 必要なパッケージのインストール
+3.3 必要なパッケージのインストール
 
 以下のコマンドを実行して Flask と Flask-CORS をインストールします。
 
+```bash
+pip install Flask==2.3.3 flask-cors==3.0.10
+```
 
-bash
-pip install Flask==2.1.3 flask-cors==3.0.10
+3.4 app.pyの作成app.py という名前のファイルを作成し、以下の内容を記述します。
 
-
-3.3 Flask サーバーの起動
-
-app.py という名前のファイルを作成し、以下の内容を記述します。
-
-
-python
+```python
 
 #モジュールインポート：アプリに必要なモジュールを使用できるようにする
 from flask import Flask, request, jsonify
@@ -96,157 +104,158 @@ app = Flask(__name__)
 CORS(app)
 
 #エンドポイントの設定：フロントエンドとの連携部分
+@app.route('/', methods=['GET'])
+def hello():
+    return jsonify({'message': 'Flask start! '})
+
 @app.route('/api/hello', methods=['GET'])
 def hello():
-    return jsonify({'message': 'Hello World'})
+    return jsonify({'message': 'Hello World by Flask'})
 
 @app.route('/api/echo', methods=['POST'])
 def echo():
     data = request.json
     return jsonify({'message': data['input']})
 
-#アプリの起動：app.runでアプリを実行する。
+#アプリの起動：app.runでアプリを実行する。 
 if __name__ == '__main__':
     app.run(debug=True)
+```
 
-以下のコマンドを実行して Flask サーバーを起動します。
+3.5以下のコマンドを実行して Flask サーバーを起動します。
 
-bash
+```bash
 python app.py
+```
 
+ブラウザで http://localhost:5000/ にアクセスして、{"message": "Flask start!"} が表示されることを確認します。
+
+3.6 API（GET）の確認
 ブラウザで http://localhost:5000/api/hello にアクセスして、{"message": "Hello World"} が表示されることを確認します。
 
+4．Next.jsの実装
+Next.jsからFlaskにリクエスト（GETやPOST）を送り、Flaskからのレスポンスを受け取る実装を行います。
 
-【Next.js で行うこと】
+4.1 GET メソッドの実装
+〇Next.js(http://localhost:3000)の動き
+http://localhost:5000/api/helloにGETリクエストを送り、Flaskからのレスポンス（{"message": "Hello World"}）が返されます。
+これをNext.jsで受け取り、画面に表示します。
 
-1. GET メソッドの実装
-ブラウザで http://localhost:3000/api/hello にアクセスすると、自動で "Hello World" が表示されます。
+〇Flask(http://localhost:5000/)の動き
+http://localhost:5000/api/helloに対するGETリクエストを受け取り、（{"message": "Hello World"}を返します。
 
-2. POST メソッドの実装
+該当するコードは以下の部分です。
+---bash
+@app.route('/api/hello', methods=['GET'])
+def hello():
+    return jsonify({'message': 'Hello World'})
+---
+
+4．2. POST メソッドの実装
 フロントエンドの入力欄にテキストを入力し、"送信" ボタンを押すと、そのテキストがバックエンドに送信され、同じ内容が画面に表示されます。
 
-【Flask で行うこと】
+〇Next.js(http://localhost:3000)の動き
+http://localhost:5000/api/echoにPOSTリクエストを送り、Flaskからのレスポンス（{"message": "入力したテキスト"}）が返されます。
+これをNext.jsで受け取り、画面に表示します。
 
-1. GET メソッドで「Hello World」を返す
-/api/hello エンドポイントに GET リクエストを送ると、{"message": "Hello World"} が返されます。
+〇Flask(http://localhost:5000/)の動き
+http://localhost:5000/api/echoに対するPOSTリクエストを受け取り、（{"message": "入力したテキスト"}を返します。
 
-2. POST メソッドで入力された内容を返す
-/api/echo エンドポイントに POST リクエストを送ると、送信されたデータがそのまま返されます。
+該当するコードは以下の部分です。
+---bash
+@app.route('/api/echo', methods=['POST'])
+def echo():
+    data = request.get_json()
+    return jsonify(message=data['input'])
+---
 
+【Next.js解説】
 
-＊以下繋ぎこみ関してより詳しく説明します。上までの説明で完了していたら以下は不要です。
-Next.jsとFlaskのセットアップが完了した後に、両方のサーバーを繋ぎ込む手順を詳しく説明します。
-
-
-【繋ぎ込み手順: Next.jsとFlaskを連携する】
-
-1. Next.jsフロントエンドの構築
-まず、Next.jsでフロントエンドのページを作成し、ユーザーが入力した内容をFlaskのAPIに送信し、その応答を表示する部分を実装します。
-
-新しいページの作成
-
-frontend/pages フォルダ内に、index.js というファイルが既に存在している場合は、それを開きます。存在しない場合は新規作成します。
-
-以下のコードを index.js に記述します。
-
-javascript
-
-
-#インポート：・アプリに必要なコンポーネント,関数等を使用できるようにする
+```javascript
 import { useState } from 'react';
 
-
-#ページコンポーネント（ページ生成）：export default:このモジュールからエクスポートされるデフォルト値を指定
 export default function Home() {
-  const [input, setInput] = useState('');
-  const [response, setResponse] = useState('');
-  
+  //GETリクエストを送信
+  const handleGetRequest = async () => {
+    const res = await fetch('http://localhost:5000/api/hello', {
+      method: 'GET',
+    });
+    const data = await res.json();
 
-#変数、定数、関数を定義
+
+    // GETリクエストの結果をコンソールに表示
+    console.log("GETリクエストの結果:", data.message);
+
+    setGetResponse(data.message);
+  };
+
+  //POSTリクエストを送信
+  const [input, setInput] = useState('');
+  const [getResponse, setGetResponse] = useState('');
+  const [postResponse, setPostResponse] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    //入力されたデータをコンソールに表示
+    console.log("入力情報:", input);
+
     const res = await fetch('http://localhost:5000/api/echo', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ input }),
-    });
-    const data = await res.json();
-    setResponse(data.message);
-  };
+      body: JSON.stringify({ "message":input }),
 
-#レンダリングする内容を定義
+    });
+    console.log(JSON.stringify({ "message":input }));
+    const data = await res.json();
+
+    //バックエンドからのレスポンスをコンソールに表示
+    console.log("Backendからのお返事:", data.message);
+
+    setPostResponse(data.message);
+  };
 
   return (
     <div>
+
       <h1>Next.jsとFlaskの連携アプリ</h1>
+
+      <h2>GETリクエストを送信</h2>
+      <button onClick={handleGetRequest}>GETリクエストを送信</button>
+      {getResponse && <p>サーバーからのGET応答: {getResponse}</p>}
+
+      <h2>POSTリクエストを送信</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           value={input}
+
           onChange={(e) => setInput(e.target.value)}
           placeholder="テキストを入力してください"
         />
+
         <button type="submit">送信</button>
       </form>
-      {response && <p>サーバーからの応答: {response}</p>}
+
+      {postResponse && <p>サーバーからのPOST応答: {postResponse}</p>}
     </div>
   );
 }
-
+```
 
 解説:
-useStateを使って、ユーザーの入力(input)と、Flaskサーバーからの応答(response)を管理しています。
-handleSubmit関数は、フォームが送信されたときにFlaskのAPIにPOSTリクエストを送信し、返ってきたデータを表示します。
+１．コードの構成
+1.1 returnよりも上の部分は関数（requestの方法や、データの受け渡し、定数の定義）を記載しています。
+1.2 return以下の部分は、htmlの記載方法に従って、画面の表示を記載しています。ただし、これはjsxというjavascriptでhtmlのように記載できる方法を使用しているためです。
 
+useState: ユーザーの入力(input)と、Flaskサーバーからの応答(response)を管理しています。ReactのuseStateフックを使用して、コンポーネントの状態を管理します。
 
-動作確認
+handleGetRequest関数: GETリクエストをFlaskのAPIに送信し、返ってきたデータをコンソールに表示し、状態を更新します。
 
-Next.jsサーバーが動作している状態で、ブラウザで http://localhost:3000 にアクセスします。
-テキストボックスに文字を入力して「送信」ボタンを押すと、FlaskのAPIからの応答が表示されることを確認します。
+handleSubmit関数: フォームが送信されたとき（ボタンを押したとき）にFlaskのAPIにPOSTリクエストを送信し、返ってきたデータを表示します。
 
-
-2. Flaskバックエンドの構築
-次に、Flaskで受け取ったデータに応じた応答を返すAPIを確認します。Flask側のコードはすでにセットアップされているので、ここでは確認作業を行います。
-
-
-app.py の確認
-
-backend/app.py ファイルを開き、以下のコードが正しく記述されているか確認します。
-
-
-python
-from flask import Flask, request, jsonify
-
-app = Flask(__name__)
-
-@app.route('/api/hello', methods=['GET'])
-def hello_world():
-    return jsonify(message='Hello World')
-
-@app.route('/api/echo', methods=['POST'])
-def echo():
-    data = request.get_json()
-    return jsonify(message=data['input'])
-
-if __name__ == '__main__':
-    app.run(debug=True)
-    
-
-Flaskサーバーの動作確認
-Flaskサーバーが動作している状態で、Postmanやブラウザで http://localhost:5000/api/hello にアクセスし、Hello World が返ってくるか確認します。
-また、POSTメソッドで http://localhost:5000/api/echo にテキストを送信し、そのままのテキストが返ってくることを確認します。
-
-3. Next.jsとFlaskの連携動作確認
-両方のサーバーを起動
-
-すでにNext.jsサーバー（http://localhost:3000）　と　Flaskサーバー（http://localhost:5000）が起動していることを確認します。
-フロントエンドからバックエンドへのデータ送信
-
-ブラウザで http://localhost:3000 にアクセスし、フォームにテキストを入力して送信します。
-テキストを送信すると、Flaskサーバーからの応答が表示されることを確認します。
 
 まとめ
 Next.jsはフロントエンド部分を担当し、ユーザーからの入力を収集します。
