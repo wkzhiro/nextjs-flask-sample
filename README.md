@@ -37,7 +37,7 @@ npx create-next-app@12 nextjs-flask-app
 
 2.2 nextjsのプロジェクトのディレクトリに移動します。
 ```bash
-cd nextjs-flask-app
+cd frontend
 ```
 2.3 必要なパッケージのインストール
 プロジェクトのディレクトリで以下のコマンドを実行して、必要なパッケージをインストールします。
