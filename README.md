@@ -145,11 +145,11 @@ http://localhost:5000/api/helloにGETリクエストを送り、Flaskからの�
 http://localhost:5000/api/helloに対するGETリクエストを受け取り、（{"message": "Hello World"}を返します。
 
 該当するコードは以下の部分です。
----bash
+```bash
 @app.route('/api/hello', methods=['GET'])
 def hello():
     return jsonify({'message': 'Hello World'})
----
+```
 
 4．2. POST メソッドの実装
 フロントエンドの入力欄にテキストを入力し、"送信" ボタンを押すと、そのテキストがバックエンドに送信され、同じ内容が画面に表示されます。
@@ -162,12 +162,12 @@ http://localhost:5000/api/echoにPOSTリクエストを送り、Flaskからの�
 http://localhost:5000/api/echoに対するPOSTリクエストを受け取り、（{"message": "入力したテキスト"}を返します。
 
 該当するコードは以下の部分です。
----bash
+```bash
 @app.route('/api/echo', methods=['POST'])
 def echo():
     data = request.get_json()
     return jsonify(message=data['input'])
----
+```
 
 【Next.js解説】
 
