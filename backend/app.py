@@ -22,5 +22,12 @@ def echo():
     message = data.get('message', 'No message provided')
     return jsonify({"message": f"echo: {message}"})
 
+@app.route('/api/multiply/<int:id>', methods=['GET'])
+def multiply(id):
+    print("multiply")
+    # idの2倍の数を計算
+    doubled_value = id * 2
+    return jsonify({"doubled_value": doubled_value})
+
 if __name__ == '__main__':
     app.run(debug=True)
