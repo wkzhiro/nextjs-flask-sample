@@ -18,9 +18,9 @@ Node.js がインストールされていることを確認してください。
 ・Flask-CORS: v3.x
 
 〇GitHubのクローン
-```
-git clone https://github.com/Daiki-ux/8th_step3-2.git
-cd 8th_step3-2
+```bash
+git clone https://github.com/wkzhiro/nextjs-flask-sample.git
+cd nextjs-flask-sample
 ```
 
 ※Zipでダウンロードしても可
