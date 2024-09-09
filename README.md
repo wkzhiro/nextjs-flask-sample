@@ -11,11 +11,19 @@ Node.js がインストールされていることを確認してください。
 
 参考サイト：https://qiita.com/sefoo0104/items/0653c935ea4a4db9dc2b
 
+※Voltaというnode.jsのパッケージ管理システムを使うこともお勧めします。今回は使用していませんので、興味ある方はお試しください。
+
+Voltaのインストール：https://www.geeklibrary.jp/counter-attack/volta/
+
+next.js×Volta：https://sinpe-pgm.com/nextjs-volta-nodejs/
+
 ・Next.js: v12.x
 
 〇Flask
 ・Python: 3.8 以上
+
 ・Flask: v2.3.x
+
 ・Flask-CORS: v3.x
 
 〇GitHubのクローン
